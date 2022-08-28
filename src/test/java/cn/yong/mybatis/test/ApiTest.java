@@ -7,8 +7,9 @@ import cn.yong.mybatis.session.SqlSessionFactory;
 import cn.yong.mybatis.session.SqlSessionFactoryBuilder;
 import cn.yong.mybatis.session.defaults.DefaultSqlSessionFactory;
 import cn.yong.mybatis.test.dao.IUserDao;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,8 +18,10 @@ import java.io.Reader;
  * @author Allen
  * @date 2022/8/28
  */
-@Slf4j
+
 public class ApiTest {
+
+    private Logger log = LoggerFactory.getLogger(ApiTest.class);
 
     @Test
     public void test_MapperProxyFactory() {
