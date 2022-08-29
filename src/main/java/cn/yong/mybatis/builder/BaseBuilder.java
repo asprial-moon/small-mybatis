@@ -1,5 +1,6 @@
 package cn.yong.mybatis.builder;
 
+import cn.yong.mybatis.TypeAliasRegistry;
 import cn.yong.mybatis.session.Configuration;
 
 /**
@@ -11,8 +12,11 @@ public class BaseBuilder {
 
     protected final Configuration configuration;
 
+    protected final TypeAliasRegistry typeAliasRegistry;
+
     public BaseBuilder(Configuration configuration) {
         this.configuration = configuration;
+        this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
     }
 
     public Configuration getConfiguration() {
