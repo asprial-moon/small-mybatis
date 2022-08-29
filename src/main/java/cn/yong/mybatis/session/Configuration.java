@@ -1,7 +1,11 @@
 package cn.yong.mybatis.session;
 
+import cn.yong.mybatis.TypeAliasRegistry;
 import cn.yong.mybatis.binding.MapperRegistry;
+import cn.yong.mybatis.datasource.druid.DruidDataSourceFactory;
+import cn.yong.mybatis.mapping.Environment;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.transaction.jdbc.JdbcTransactionFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +17,12 @@ import java.util.Map;
  * @date 2022/8/28
  */
 public class Configuration {
+
+    /**
+     * 环境
+     */
+    protected Environment environment;
+
     /**
      * 映射注册机
      */
@@ -22,6 +32,19 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+
+    /**
+     * 类型别名注册机
+     */
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    /**
+     * 在 Configuration 配置选项类中，添加类型别名注册机，通过构造函数添加 JDBC、DRUID 注册操作。
+     */
+    public Configuration() {
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
 
     public <T> void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
@@ -45,5 +68,17 @@ public class Configuration {
 
     public MappedStatement getMappedStatement(String id) {
         return mappedStatements.get(id);
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }

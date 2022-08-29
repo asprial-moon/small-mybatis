@@ -31,6 +31,7 @@ public class MapperMethod {
                 break;
             case SELECT:
                 result = sqlSession.selectOne(command.getName(), args);
+                break;
             default:
                 throw new RuntimeException("Unknown execution method for: " + command.getName());
         }
