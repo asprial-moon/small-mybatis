@@ -5,8 +5,16 @@ import cn.yong.mybatis.binding.MapperRegistry;
 import cn.yong.mybatis.datasource.druid.DruidDataSourceFactory;
 import cn.yong.mybatis.datasource.pooled.PooledDataSourceFactory;
 import cn.yong.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import cn.yong.mybatis.executor.Executor;
+import cn.yong.mybatis.executor.SimpleExecutor;
+import cn.yong.mybatis.executor.resultset.DefaultResultSetHandler;
+import cn.yong.mybatis.executor.resultset.ResultSetHandler;
+import cn.yong.mybatis.executor.statement.PreparedStatementHandler;
+import cn.yong.mybatis.executor.statement.StatementHandler;
+import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.Environment;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.transaction.Transaction;
 import cn.yong.mybatis.transaction.jdbc.JdbcTransactionFactory;
 
 import java.util.HashMap;
@@ -84,5 +92,36 @@ public class Configuration {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    /**
+     * 创建语句处理器
+     * @param executor
+     * @param ms
+     * @param boundSql
+     * @return
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, ms, parameter, resultHandler, boundSql);
+    }
+
+    /**
+     * 创建结果集处理器
+     * @param executor
+     * @param mappedStatement
+     * @param boundSql
+     * @return
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    /**
+     * 生产执行器
+     * @param transaction
+     * @return
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
     }
 }

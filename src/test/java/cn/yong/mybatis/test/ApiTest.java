@@ -1,7 +1,11 @@
 package cn.yong.mybatis.test;
 
+import cn.hutool.json.JSONUtil;
 import cn.yong.mybatis.binding.MapperRegistry;
 import cn.yong.mybatis.builder.xml.XMLConfigBuilder;
+import cn.yong.mybatis.datasource.pooled.PooledConnection;
+import cn.yong.mybatis.datasource.pooled.PooledDataSource;
+import cn.yong.mybatis.datasource.unpooled.UnpooledDataSource;
 import cn.yong.mybatis.io.Resources;
 import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.SqlSession;
@@ -18,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @author Allen
@@ -25,7 +31,7 @@ import java.io.Reader;
  */
 
 public class ApiTest {
-    
+
     private static final Logger log = LoggerFactory.getLogger(ApiTest.class);
 
     @Test
@@ -69,9 +75,28 @@ public class ApiTest {
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
 
         // 3. 测试验证
-        User user = userDao.queryUserInfoById(1L);
-        log.info("测试结果：{}", JSON.toJSONString(user));
+        for (int i = 0; i < 50; i++) {
+            User user = userDao.queryUserInfoById(1L);
+            log.info("测试结果：{}", JSON.toJSONString(user));
+        }
     }
+
+    @Test
+    public void test_pooled() throws SQLException, InterruptedException {
+        UnpooledDataSource dataSource = new UnpooledDataSource();
+        dataSource.setDriver("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://rm-wz943nx257hyn554v2o.mysql.rds.aliyuncs.com/mybatis?useUnicode=true");
+        dataSource.setUsername("root");
+        dataSource.setPassword("Sunnyday1711");
+
+        while (true) {
+            Connection connection = dataSource.getConnection();
+            System.out.println(connection);
+            Thread.sleep(1000);
+            connection.close();
+        }
+    }
+
 
     @Test
     public void test_selectOne() throws IOException {
@@ -81,12 +106,25 @@ public class ApiTest {
         Configuration configuration = xmlConfigBuilder.parse();
 
         // 获取 DefaultSqlSession
-        SqlSession sqlSession = new DefaultSqlSession(configuration);
-        // 执行查询：默认是一个集合参数
-
-        Object[] req = {1L};
-        Object res = sqlSession.selectOne("cn.yong.mybatis.test.dao.IUserDao.queryUserInfoById", req);
-        log.info("测试结果：{}", JSON.toJSONString(res));
+//        SqlSession sqlSession = new DefaultSqlSession(configuration);
+//        // 执行查询：默认是一个集合参数
+//
+//        Object[] req = {1L};
+//        Object res = sqlSession.selectOne("cn.yong.mybatis.test.dao.IUserDao.queryUserInfoById", req);
+//        log.info("测试结果：{}", JSON.toJSONString(res));
     }
 
+
+    @Test
+    public void test_SqlSessionFactory_07() throws IOException {
+        // 1. 从SqlSessionFactory中获取SqlSession
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        // 2. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+
+        // 3. 测试验证
+        User user = userDao.queryUserInfoById(1L);
+        log.info("测试结果：{}", JSONUtil.toJsonStr(user));
+    }
 }

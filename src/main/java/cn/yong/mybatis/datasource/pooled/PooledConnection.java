@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 /**
  * @desc 池化代理的链接
- * @user Line
+ * @author  Line
  * @date 2022/8/29
  */
 public class PooledConnection implements InvocationHandler {
