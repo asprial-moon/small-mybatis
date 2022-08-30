@@ -72,7 +72,7 @@ public class PooledConnection implements InvocationHandler {
         valid = false;
     }
 
-
+    @Override
     public int hashCode() {
         return hashCode;
     }
@@ -96,6 +96,11 @@ public class PooledConnection implements InvocationHandler {
     public Connection getProxyConnection() {
         return proxyConnection;
     }
+
+    public int getRealHashCode() {
+        return realConnection == null ? 0 : realConnection.hashCode();
+    }
+
 
     public void setProxyConnection(Connection proxyConnection) {
         this.proxyConnection = proxyConnection;
