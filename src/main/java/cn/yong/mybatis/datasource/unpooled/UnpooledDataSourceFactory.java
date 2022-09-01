@@ -1,31 +1,58 @@
 package cn.yong.mybatis.datasource.unpooled;
 
 import cn.yong.mybatis.datasource.DataSourceFactory;
+import cn.yong.mybatis.reflection.MetaObject;
+import cn.yong.mybatis.reflection.SystemMetaObject;
 
 import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
  * @desc 无池化数据源工厂
- * @user Line
+ * @author Line
  * @date 2022/8/29
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
+    protected DataSource dataSource;
 
-    protected Properties props;
+    public UnpooledDataSourceFactory() {
+        this.dataSource = new UnpooledDataSource();
+    }
 
     @Override
     public void setProperties(Properties props) {
-        this.props = props;
+        MetaObject metaObject = SystemMetaObject.forObject(dataSource);
+        for (Object key : props.keySet()) {
+            String propertyName = (String) key;
+            if (metaObject.hasSetter(propertyName)) {
+                String value = (String) props.get(propertyName);
+                convertValue(metaObject, propertyName, value);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param metaObject
+     * @param propertyName
+     * @param value
+     * @return
+     */
+    private Object convertValue(MetaObject metaObject, String propertyName, String value) {
+        Object convetedValue = value;
+        Class<?> targetType = metaObject.getSetterType(propertyName);
+        if (targetType == Integer.class || targetType == int.class) {
+            convetedValue = Integer.valueOf(value);
+        } else if (targetType == Long.class || targetType == long.class) {
+            convetedValue = Long.valueOf(value);
+        } else if (targetType == Boolean.class || targetType == boolean.class) {
+            convetedValue = Boolean.valueOf(value);
+        }
+        return convetedValue;
     }
 
     @Override
     public DataSource getDataSource() {
-        UnpooledDataSource unpooledDataSource = new UnpooledDataSource();
-        unpooledDataSource.setDriver(props.getProperty("driver"));
-        unpooledDataSource.setUrl(props.getProperty("url"));
-        unpooledDataSource.setUsername(props.getProperty("username"));
-        unpooledDataSource.setPassword(props.getProperty("password"));
-        return unpooledDataSource;
+        return dataSource;
     }
 }
