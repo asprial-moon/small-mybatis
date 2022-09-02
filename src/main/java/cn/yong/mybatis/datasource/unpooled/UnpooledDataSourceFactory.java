@@ -26,7 +26,8 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
             String propertyName = (String) key;
             if (metaObject.hasSetter(propertyName)) {
                 String value = (String) props.get(propertyName);
-                convertValue(metaObject, propertyName, value);
+                Object convertValue = convertValue(metaObject, propertyName, value);
+                metaObject.setValue(propertyName, convertValue);
             }
         }
     }

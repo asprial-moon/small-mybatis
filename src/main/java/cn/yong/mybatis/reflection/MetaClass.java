@@ -148,7 +148,7 @@ public class MetaClass {
                 return false;
             }
         } else {
-            return reflector.hasGetter(prop.getChildren());
+            return reflector.hasGetter(prop.getName());
         }
     }
 

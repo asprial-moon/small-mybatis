@@ -238,7 +238,7 @@ public class UnpooledDataSource implements DataSource {
         return driver;
     }
 
-    public void setDriver(String driver) {
+    public synchronized void setDriver(String driver) {
         this.driver = driver;
     }
 

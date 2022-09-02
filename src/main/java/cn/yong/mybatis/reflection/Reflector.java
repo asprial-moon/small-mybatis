@@ -177,7 +177,12 @@ public class Reflector {
                 }
             }
         }
-        resolveGetterConflicts(conflictingSetters);
+        resolveSetterConflicts(conflictingSetters);
+    }
+
+    private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
+
+
     }
 
 
@@ -216,6 +221,13 @@ public class Reflector {
                 }
                 addGetMethod(propName, getter);
             }
+        }
+    }
+
+    private void addSetMethod(String name, Method method) {
+        if (isValidPropertyName(name)) {
+            setMethods.put(name, new MethodInvoker(method));
+            setTypes.put(name, method.getParameterTypes()[0]);
         }
     }
 
