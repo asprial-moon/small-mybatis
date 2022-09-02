@@ -181,10 +181,37 @@ public class Reflector {
     }
 
     private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
-
-
+        for (String propName : conflictingSetters.keySet()) {
+            List<Method> setters = conflictingSetters.get(propName);
+            Method firstMethod = setters.get(0);
+            if (setters.size() == 1) {
+                addSetMethod(propName, firstMethod);
+            } else {
+                Class<?> expectedType = getTypes.get(propName);
+                if (expectedType == null) {
+                    throw new RuntimeException("Illegal overloaded setter method with ambiguous type for property "
+                            + propName + " in class " + firstMethod.getDeclaringClass() + ".  This breaks the JavaBeans " +
+                            "specification and can cause unpredicatble results.");
+                } else {
+                    Iterator<Method> methods = setters.iterator();
+                    Method setter = null;
+                    while (methods.hasNext()) {
+                        Method method = methods.next();
+                        if (method.getParameterTypes().length == 1 && expectedType.equals(method.getParameterTypes()[0])) {
+                            setter = method;
+                            break;
+                        }
+                    }
+                    if (setter == null) {
+                        throw new RuntimeException("Illegal overloaded setter method with ambiguous type for property "
+                                + propName + " in class " + firstMethod.getDeclaringClass() + ".  This breaks the JavaBeans " +
+                                "specification and can cause unpredicatble results.");
+                    }
+                    addSetMethod(propName, setter);
+                }
+            }
+        }
     }
-
 
     private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
         List<Method> list = conflictingMethods.computeIfAbsent(name, k -> new ArrayList<>());
