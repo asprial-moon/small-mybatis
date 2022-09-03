@@ -29,6 +29,11 @@ public class PreparedStatementHandler extends BaseStatementHandler {
         return connection.prepareStatement(sql);
     }
 
+    /**
+     * 设置参数
+     * @param statement
+     * @throws SQLException
+     */
     @Override
     public void parameterize(Statement statement) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;

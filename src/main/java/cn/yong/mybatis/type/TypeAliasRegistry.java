@@ -1,4 +1,6 @@
-package cn.yong.mybatis;
+package cn.yong.mybatis.type;
+
+import cn.yong.mybatis.io.Resources;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -35,7 +37,20 @@ public class TypeAliasRegistry {
     }
 
     public <T> Class<T> resolveAlias(String string) {
-        String key = string.toLowerCase(Locale.ENGLISH);
-        return (Class<T>) TYPE_ALIASES.get(key);
+        try {
+            if (string == null) {
+                return null;
+            }
+            String key = string.toLowerCase(Locale.ENGLISH);
+            Class<T> value;
+            if (TYPE_ALIASES.containsKey(key)) {
+                value = (Class<T>) TYPE_ALIASES.get(key);
+            } else {
+                value = (Class<T>) Resources.classForName(string);
+            }
+            return value;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Could not resolve type alias '" + string + "' Cause: " + e, e);
+        }
     }
 }
