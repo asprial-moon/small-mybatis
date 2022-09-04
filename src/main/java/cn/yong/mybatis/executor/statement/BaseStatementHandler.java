@@ -19,29 +19,29 @@ import java.sql.Statement;
  * @date 2022/8/30
  */
 public abstract class BaseStatementHandler implements StatementHandler {
-
     protected final Configuration configuration;
-
     protected final Executor executor;
-
     protected final MappedStatement mappedStatement;
-
     protected final Object parameterObject;
-
     protected final ResultSetHandler resultSetHandler;
-
     protected ParameterHandler parameterHandler;
-
+    protected final RowBounds rowBounds;
     protected BoundSql boundSql;
-
 
     public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
+        this.rowBounds = rowBounds;
+
+        // step-11 新增判断，因为update不会传入boundSql参数，所以这里要做初始化处理
+        if (boundSql == null) {
+            boundSql = mappedStatement.getBoundSql(parameterObject);
+        }
+        this.boundSql = boundSql;
+
         this.parameterObject = parameterObject;
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
-        this.boundSql = boundSql;
 
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, resultHandler, boundSql);
     }

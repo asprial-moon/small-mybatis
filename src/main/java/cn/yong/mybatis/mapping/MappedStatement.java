@@ -31,6 +31,14 @@ public class MappedStatement {
     MappedStatement() {
     }
 
+    /**
+     * step-11 新增方法
+     */
+    public BoundSql getBoundSql(Object parameterObject) {
+        // 调用SqlSource#getBoundSql
+        return sqlSource.getBoundSql(parameterObject);
+    }
+
     public static class Builder {
         private MappedStatement mappedStatement = new MappedStatement();
         public Builder(Configuration configuration, String id, SqlCommandType sqlCommandType, SqlSource sqlSource, Class<?> resultType) {

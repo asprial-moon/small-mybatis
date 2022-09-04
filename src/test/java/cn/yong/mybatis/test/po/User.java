@@ -3,7 +3,6 @@ package cn.yong.mybatis.test.po;
 import java.util.Date;
 
 public class User {
-
     private Long id;
     // 用户ID
     private String userId;
@@ -26,6 +25,12 @@ public class User {
     public User(Long id, String userId) {
         this.id = id;
         this.userId = userId;
+    }
+
+    public User(Long id, String userId, String userName) {
+        this.id = id;
+        this.userId = userId;
+        this.userName = userName;
     }
 
     public Long getId() {
