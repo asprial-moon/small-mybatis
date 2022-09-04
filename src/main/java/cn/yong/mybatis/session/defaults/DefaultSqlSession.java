@@ -3,7 +3,11 @@ package cn.yong.mybatis.session.defaults;
 import cn.yong.mybatis.executor.Executor;
 import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.session.Configuration;
+import cn.yong.mybatis.session.RowBounds;
 import cn.yong.mybatis.session.SqlSession;
+import com.alibaba.fastjson.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -14,7 +18,7 @@ import java.util.List;
  * @date 2022/8/28
  */
 public class DefaultSqlSession implements SqlSession {
-
+    private Logger log = LoggerFactory.getLogger(DefaultSqlSession.class);
     /**
      * 映射器注册机
      */
@@ -34,8 +38,9 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement, Object parameter) {
+        log.info("执行查询 statement：{} parameter：{}", statement, JSON.toJSONString(parameter));
         MappedStatement ms = configuration.getMappedStatement(statement);
-        List<T> list = executor.query(ms, parameter, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
+        List<T> list = executor.query(ms, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
         return list.get(0);
     }
 

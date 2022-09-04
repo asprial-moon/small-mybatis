@@ -172,4 +172,14 @@ public class ApiTest {
         User user = userDao.queryUserInfo(new User(1L, "10001"));
         log.info("测试结果：{}", JSON.toJSONString(user));
     }
+
+    // ==========================第十一章===============================================
+    @Test
+    public void test_queryUserInfoById_11() {
+        // 1. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+        // 2. 测试验证：基本参数
+        User user = userDao.queryUserInfoById(1L);
+        log.info("测试结果：{}", JSON.toJSONString(user));
+    }
 }

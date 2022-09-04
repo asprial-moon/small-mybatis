@@ -3,6 +3,7 @@ package cn.yong.mybatis.executor;
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.session.ResultHandler;
+import cn.yong.mybatis.session.RowBounds;
 import cn.yong.mybatis.transaction.Transaction;
 
 import java.sql.SQLException;
@@ -26,7 +27,7 @@ public interface Executor {
      * @return
      * @param <E>
      */
-    <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     /**
      * 获取事务

@@ -136,8 +136,8 @@ public class Configuration {
      * @param boundSql
      * @return
      */
-    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
-        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, resultHandler, rowBounds, boundSql);
     }
 
     /**
@@ -156,8 +156,8 @@ public class Configuration {
      * @param boundSql
      * @return
      */
-    public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, ms, parameter, resultHandler, boundSql);
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
     public MetaObject newMateObject(Object object) {
@@ -191,4 +191,7 @@ public class Configuration {
         return languageRegistry.getDefaultDriver();
     }
 
+    public ObjectFactory getObjectFactory() {
+        return objectFactory;
+    }
 }
