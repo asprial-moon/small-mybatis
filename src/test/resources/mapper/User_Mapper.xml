@@ -3,9 +3,15 @@
 <mapper namespace="cn.yong.mybatis.test.dao.IUserDao">
 
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="cn.yong.mybatis.test.po.User">
-        SELECT id, userId, userHead, createTime
+        SELECT id, userId, userName, userHead
         FROM user
         where id = #{id}
+    </select>
+
+    <select id="queryUserInfo" parameterType="cn.yong.mybatis.test.po.User" resultType="cn.yong.mybatis.test.po.User">
+        SELECT id, userId, userName, userHead
+        FROM user
+        where id = #{id} and userId = #{userId}
     </select>
 
 </mapper>

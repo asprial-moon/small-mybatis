@@ -4,6 +4,7 @@ import cn.yong.mybatis.mapping.ParameterMapping;
 import cn.yong.mybatis.mapping.SqlSource;
 import cn.yong.mybatis.parsing.GenericTokenParser;
 import cn.yong.mybatis.parsing.TokenHandler;
+import cn.yong.mybatis.reflection.MetaClass;
 import cn.yong.mybatis.reflection.MetaObject;
 import cn.yong.mybatis.session.Configuration;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.util.*;
  */
 public class SqlSourceBuilder extends BaseBuilder {
 
-    private Logger log = LoggerFactory.getLogger(SqlSourceBuilder.class);
+    private static Logger log = LoggerFactory.getLogger(SqlSourceBuilder.class);
 
     private static final String parameterProperties = "javaType,jdbcType,mode,numericScale,resultMap,typeHandler,jdbcTypeName";
 
@@ -63,6 +64,19 @@ public class SqlSourceBuilder extends BaseBuilder {
             Map<String, String> propertiesMap = new ParameterExpression(content);
             String property = propertiesMap.get("property");
             Class<?> propertyType = parameterType;
+            if (typeHandlerRegistry.hasTypeHandler(propertyType)) {
+                propertyType = parameterType;
+            } else if (propertyType != null) {
+                MetaClass metaClass = MetaClass.forClass(parameterType);
+                if (metaClass.hasGetter(property)) {
+                    propertyType = metaClass.getGetterType(property);
+                } else {
+                    propertyType = Object.class;
+                }
+            } else {
+                propertyType = Object.class;
+            }
+            log.info("构建参数映射 property：{} propertyType：{}", property, propertyType);
             return new ParameterMapping.Builder(configuration, property, propertyType).build();
         }
     }

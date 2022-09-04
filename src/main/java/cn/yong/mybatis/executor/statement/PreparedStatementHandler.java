@@ -1,7 +1,6 @@
 package cn.yong.mybatis.executor.statement;
 
 import cn.yong.mybatis.executor.Executor;
-import cn.yong.mybatis.executor.resultset.ResultSetHandler;
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.session.ResultHandler;
@@ -36,8 +35,9 @@ public class PreparedStatementHandler extends BaseStatementHandler {
      */
     @Override
     public void parameterize(Statement statement) throws SQLException {
-        PreparedStatement ps = (PreparedStatement) statement;
-        ps.setLong(1, Long.parseLong(((Object[]) parameterObject)[0].toString()));
+//        PreparedStatement ps = (PreparedStatement) statement;
+//        ps.setLong(1, Long.parseLong(((Object[]) parameterObject)[0].toString()));
+        parameterHandler.setParameters((PreparedStatement) statement);
     }
 
     @Override
