@@ -35,7 +35,7 @@ public class MapperMethod {
             }
             case DELETE: {
                 Object param = method.convertArgsToSqlCommandParam(args);
-                sqlSession.delete(command.getName(), param);
+                result = sqlSession.delete(command.getName(), param);
                 break;
             }
             case UPDATE:{

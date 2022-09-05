@@ -38,9 +38,6 @@ public abstract class BaseExecutor implements Executor {
 
     @Override
     public int update(MappedStatement ms, Object parameter) throws SQLException {
-        if (closed) {
-            throw new RuntimeException("Executor was closed.");
-        }
         return doUpdate(ms, parameter);
     }
 
