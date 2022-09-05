@@ -1,6 +1,7 @@
 package cn.yong.mybatis.session;
 
 import cn.yong.mybatis.executor.parameter.ParameterHandler;
+import cn.yong.mybatis.mapping.ResultMap;
 import cn.yong.mybatis.reflection.MetaObject;
 import cn.yong.mybatis.reflection.factory.DefaultObjectFactory;
 import cn.yong.mybatis.reflection.factory.ObjectFactory;
@@ -52,6 +53,10 @@ public class Configuration {
      * 映射的语句，存在Map里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    /**
+     * 结果映射，存在Map里
+     */
+    protected final Map<String, ResultMap> resultMaps = new HashMap<>();
     /**
      * 类型别名注册机
      */
@@ -193,5 +198,13 @@ public class Configuration {
 
     public ObjectFactory getObjectFactory() {
         return objectFactory;
+    }
+
+    public ResultMap getResultMap(String id) {
+        return resultMaps.get(id);
+    }
+
+    public void addResultMap(ResultMap resultMap) {
+        resultMaps.put(resultMap.getId(), resultMap);
     }
 }
