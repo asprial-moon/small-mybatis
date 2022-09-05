@@ -1,8 +1,10 @@
 package cn.yong.mybatis.builder;
 
 import cn.yong.mybatis.mapping.*;
+import cn.yong.mybatis.reflection.MetaClass;
 import cn.yong.mybatis.scripting.LanguageDriver;
 import cn.yong.mybatis.session.Configuration;
+import cn.yong.mybatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,30 @@ public class MapperBuilderAssistant extends BaseBuilder {
         this.resource = resource;
     }
 
+    public ResultMapping buildResultMapping(Class<?> resultType, String property, String column, List<ResultFlag> flags) {
+        Class<?> javaTypeClass = resolveResultJavaType(resultType, property, null);
+        TypeHandler<?> typeHandlerInterface = resolveTypeHandler(javaTypeClass, null);
+
+        ResultMapping.Builder builder = new ResultMapping.Builder(configuration, property, column, javaTypeClass);
+        builder.typeHandler(typeHandlerInterface);
+        builder.flags(flags);
+
+        return builder.build();
+    }
+
+    private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
+        if (javaType == null && property != null) {
+            try {
+                MetaClass metaResultType = MetaClass.forClass(resultType);
+                javaType = metaResultType.getSetterType(property);
+            } catch (Exception ignore) {
+            }
+        }
+        if (javaType == null) {
+            javaType = Object.class;
+        }
+        return javaType;
+    }
 
     public String getCurrentNamespace() {
         return currentNamespace;
@@ -108,7 +134,17 @@ public class MapperBuilderAssistant extends BaseBuilder {
         statementBuilder.resultMaps(resultMaps);
     }
 
+    /**
+     * step-13 新增方法
+     * @param id
+     * @param type
+     * @param resultMappings
+     * @return
+     */
     public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
+        // 补全ID全路径，如: cn.yong.mybatis.test.dao.IActivityDao + activityMap
+        id = applyCurrentNamespace(id, false);
+
         ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(configuration, id, type, resultMappings);
 
         ResultMap resultMap = inlineResultMapBuilder.build();

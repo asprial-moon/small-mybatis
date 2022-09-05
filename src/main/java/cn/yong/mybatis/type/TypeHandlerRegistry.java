@@ -1,6 +1,7 @@
 package cn.yong.mybatis.type;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class TypeHandlerRegistry {
         register(String.class, new StringTypeHandler());
         register(String.class, JdbcType.CHAR, new StringTypeHandler());
         register(String.class, JdbcType.VARCHAR, new StringTypeHandler());
+        register(Date.class, new DateTypeHandler());
     }
 
     private <T> void register(Type javaType, TypeHandler<? extends T> typeHandler) {
@@ -65,4 +67,7 @@ public class TypeHandlerRegistry {
         return (TypeHandler<T>) handler;
     }
 
+    public TypeHandler<?> getMappingTypeHandler(Class<? extends TypeHandler<?>> handlerType) {
+        return ALL_TYPE_HANDLERS_MAP.get(handlerType);
+    }
 }

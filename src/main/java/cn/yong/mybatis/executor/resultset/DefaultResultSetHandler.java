@@ -27,7 +27,7 @@ import java.util.Locale;
  * @date 2022/8/30
  */
 public class DefaultResultSetHandler implements ResultSetHandler {
-
+    private static final Object NO_VALUE = new Object();
     private final Configuration configuration;
     private final MappedStatement mappedStatement;
     private final RowBounds rowBounds;
@@ -114,7 +114,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         Object resultObject = createResultObject(rsw, resultMap, null);
         if (resultObject != null && !typeHandlerRegistry.hasTypeHandler(resultMap.getType())) {
             final MetaObject metaObject = configuration.newMateObject(resultObject);
+            // 自动映射：把每列的值赋到对应的字段上
             applyAutomaticMappings(rsw, resultMap, metaObject, null);
+            // Map映射，根据映射类型赋值到字段
+            applyPropertyMapping(rsw, resultMap, metaObject, null);
         }
         return resultObject;
     }
@@ -134,33 +137,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             return objectFactory.create(resultType);
         }
         throw new RuntimeException("Do not know how to create an instance of " + resultType);
-    }
-
-    private <T> List<T> resultSet2Obj(ResultSet resultSet, Class<?> clazz) {
-        List<T> list = new ArrayList<>();
-        try {
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            while (resultSet.next()) {
-                T obj = (T) clazz.newInstance();
-                for (int i = 1; i <= columnCount; i ++) {
-                    Object value = resultSet.getObject(i);
-                    String columnName = metaData.getColumnName(i);
-                    String setMethod = "set" + columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
-                    Method method;
-                    if (value instanceof Timestamp) {
-                        method = clazz.getMethod(setMethod, Date.class);
-                    } else {
-                        method = clazz.getMethod(setMethod, value.getClass());
-                    }
-                    method.invoke(obj, value);
-                }
-                list.add(obj);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     private boolean applyAutomaticMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String columnPrefix) throws SQLException {
@@ -190,6 +166,28 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                         // 通过反射工具类设置属性值
                         metaObject.setValue(property, value);
                     }
+                }
+            }
+        }
+        return foundValues;
+    }
+
+    private boolean applyPropertyMapping(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String columnPrefix) throws SQLException {
+        List<String> mappedColumnNames = rsw.getMappedColumnNames(resultMap, columnPrefix);
+        boolean foundValues = false;
+        List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();
+        for (ResultMapping propertyMapping : propertyMappings) {
+            final String column = propertyMapping.getColumn();
+            if (column != null && mappedColumnNames.contains(column.toUpperCase(Locale.ENGLISH))) {
+                // 获取值
+                final TypeHandler<?> typeHandler = propertyMapping.getTypeHandler();
+                Object value = typeHandler.getResult(rsw.getResultSet(), column);
+                // 设置值
+                final String property = propertyMapping.getProperty();
+                if (value != NO_VALUE && property != null && value != null) {
+                    // 通过反射工具类设置属性值
+                    metaObject.setValue(property, value);
+                    foundValues = true;
                 }
             }
         }
