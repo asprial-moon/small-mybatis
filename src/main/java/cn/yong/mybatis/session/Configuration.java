@@ -1,5 +1,6 @@
 package cn.yong.mybatis.session;
 
+import cn.yong.mybatis.executor.keygen.KeyGenerator;
 import cn.yong.mybatis.executor.parameter.ParameterHandler;
 import cn.yong.mybatis.mapping.ResultMap;
 import cn.yong.mybatis.reflection.MetaObject;
@@ -45,6 +46,8 @@ public class Configuration {
      * 环境
      */
     protected Environment environment;
+
+    protected boolean useGeneratorKeys = false;
     /**
      * 映射注册机
      */
@@ -57,6 +60,7 @@ public class Configuration {
      * 结果映射，存在Map里
      */
     protected final Map<String, ResultMap> resultMaps = new HashMap<>();
+    protected final Map<String, KeyGenerator> keyGenerators = new HashMap<>();
     /**
      * 类型别名注册机
      */
@@ -206,5 +210,25 @@ public class Configuration {
 
     public void addResultMap(ResultMap resultMap) {
         resultMaps.put(resultMap.getId(), resultMap);
+    }
+
+    public void addKeyGenerator(String id, KeyGenerator keyGenerator) {
+        keyGenerators.put(id, keyGenerator);
+    }
+
+    public KeyGenerator getKeyGenerator(String id) {
+        return keyGenerators.get(id);
+    }
+
+    public boolean hasKeyGenerator(String id) {
+        return keyGenerators.containsKey(id);
+    }
+
+    public boolean isUseGeneratedKeys() {
+        return useGeneratorKeys;
+    }
+
+    public void setUseGeneratorKeys(boolean useGeneratorKeys) {
+        this.useGeneratorKeys = useGeneratorKeys;
     }
 }

@@ -31,6 +31,18 @@ public interface Executor {
      * 查询
      * @param ms
      * @param parameter
+     * @param rowBounds
+     * @param resultHandler
+     * @return
+     * @param <E>
+     * @throws SQLException
+     */
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
+
+    /**
+     * 查询
+     * @param ms
+     * @param parameter
      * @param resultHandler
      * @param boundSql
      * @return
