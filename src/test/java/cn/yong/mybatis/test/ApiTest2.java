@@ -36,7 +36,7 @@ public class ApiTest2 {
         // 1. 获取映射器对象
         IActivityDao dao = sqlSession.getMapper(IActivityDao.class);
         // 2. 测试验证
-        Activity res = dao.queryActivityById(100001L);
-        log.info("测试结果：{}", JSON.toJSONString(res));
+//        Activity res = dao.queryActivityById(100001L);
+//        log.info("测试结果：{}", JSON.toJSONString(res));
     }
 }

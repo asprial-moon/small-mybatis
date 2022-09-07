@@ -43,8 +43,8 @@ public class ApiTest_14 {
         // 1. 获取映射器对象
         IActivityDao dao = sqlSession.getMapper(IActivityDao.class);
         // 2. 测试验证
-        Activity res = dao.queryActivityById(100001L);
-        logger.info("测试结果：{}", JSON.toJSONString(res));
+//        Activity res = dao.queryActivityById(100001L);
+//        logger.info("测试结果：{}", JSON.toJSONString(res));
     }
 
     @Test
@@ -59,7 +59,8 @@ public class ApiTest_14 {
         activity.setCreator("xiaofuge");
 
         // 2. 测试验证
-        Integer res = dao.insert(activity);
+//        Integer res = dao.insert(activity);
+        Integer res = null;
         sqlSession.commit();
 
         logger.info("测试结果：count：{} idx：{}", res, JSON.toJSONString(activity.getId()));
