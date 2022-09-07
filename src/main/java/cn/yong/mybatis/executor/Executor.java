@@ -1,5 +1,6 @@
 package cn.yong.mybatis.executor;
 
+import cn.yong.mybatis.cache.CacheKey;
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.session.ResultHandler;
@@ -48,7 +49,7 @@ public interface Executor {
      * @return
      * @param <E>
      */
-    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException;
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException;
 
     /**
      * 获取事务

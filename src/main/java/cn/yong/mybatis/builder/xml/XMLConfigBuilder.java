@@ -9,6 +9,7 @@ import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.mapping.SqlCommandType;
 import cn.yong.mybatis.plugin.Interceptor;
 import cn.yong.mybatis.session.Configuration;
+import cn.yong.mybatis.session.LocalCacheScope;
 import cn.yong.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -57,9 +58,10 @@ public class XMLConfigBuilder extends BaseBuilder {
         try {
             // 插件 step-16 添加
             pluginElement(root.element("plugins"));
+            // 设置
+            settingsElement(root.element("settings"));
             // 环境
             environmentsElement(root.element("environments"));
-
             // 解析映射器
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
@@ -97,6 +99,20 @@ public class XMLConfigBuilder extends BaseBuilder {
             configuration.addInterceptor(interceptorInstance);
         }
     }
+
+
+    private void settingsElement(Element context) {
+        if (context == null) {
+            return;
+        }
+        List<Element> elements = context.elements();
+        Properties properties = new Properties();
+        for (Element element : elements) {
+            properties.setProperty(element.attributeValue("name"), element.attributeValue("value"));
+        }
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(properties.getProperty("localCacheScope")));
+    }
+
 
     private void environmentsElement(Element context) throws Exception {
         String environment = context.attributeValue("default");
