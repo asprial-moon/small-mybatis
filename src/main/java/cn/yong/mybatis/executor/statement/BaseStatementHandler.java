@@ -61,6 +61,12 @@ public abstract class BaseStatementHandler implements StatementHandler {
         }
     }
 
+    @Override
+    public BoundSql getBoundSql() {
+        return boundSql;
+    }
+
+
     /**
      * 实例化 Statement
      * @param connection

@@ -3,6 +3,8 @@ package cn.yong.mybatis.session;
 import cn.yong.mybatis.executor.keygen.KeyGenerator;
 import cn.yong.mybatis.executor.parameter.ParameterHandler;
 import cn.yong.mybatis.mapping.ResultMap;
+import cn.yong.mybatis.plugin.Interceptor;
+import cn.yong.mybatis.plugin.InterceptorChain;
 import cn.yong.mybatis.reflection.MetaObject;
 import cn.yong.mybatis.reflection.factory.DefaultObjectFactory;
 import cn.yong.mybatis.reflection.factory.ObjectFactory;
@@ -61,6 +63,10 @@ public class Configuration {
      */
     protected final Map<String, ResultMap> resultMaps = new HashMap<>();
     protected final Map<String, KeyGenerator> keyGenerators = new HashMap<>();
+
+    // 插件拦截器链
+    protected final InterceptorChain interceptorChain = new InterceptorChain();
+
     /**
      * 类型别名注册机
      */
@@ -166,7 +172,11 @@ public class Configuration {
      * @return
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+        // 处理创建语句， Mybatis 这里加了路由 STATEMENT、PREPARED、CALLABLE 我们默认只根据预处理进行实例化
+        StatementHandler statementHandler = new PreparedStatementHandler(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+        // 嵌入插件，代理对象
+        statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
+        return statementHandler;
     }
 
     public MetaObject newMateObject(Object object) {
@@ -230,5 +240,9 @@ public class Configuration {
 
     public void setUseGeneratorKeys(boolean useGeneratorKeys) {
         this.useGeneratorKeys = useGeneratorKeys;
+    }
+
+    public void addInterceptor(Interceptor interceptorInstance) {
+        interceptorChain.addInterceptor(interceptorInstance);
     }
 }

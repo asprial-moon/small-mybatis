@@ -1,5 +1,6 @@
 package cn.yong.mybatis.executor.statement;
 
+import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.session.ResultHandler;
 
 import java.sql.Connection;
@@ -47,4 +48,9 @@ public interface StatementHandler {
      */
     <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException;
 
+    /**
+     * 获取绑定SQL
+     * @return
+     */
+    BoundSql getBoundSql();
 }
