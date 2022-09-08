@@ -44,10 +44,13 @@ public interface Executor {
      * 查询
      * @param ms
      * @param parameter
+     * @param rowBounds
      * @param resultHandler
+     * @param key
      * @param boundSql
      * @return
      * @param <E>
+     * @throws SQLException
      */
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException;
 
@@ -76,4 +79,25 @@ public interface Executor {
      * @param forceRollback
      */
     void close(boolean forceRollback);
+
+    /**
+     * 清理Session缓存
+     */
+    void clearLocalCache();
+
+    /**
+     * 创建缓存 Key
+     * @param ms
+     * @param parameterObject
+     * @param rowBounds
+     * @param boundSql
+     * @return
+     */
+    CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
+
+    /**
+     * 设置执行器包装器
+     * @param cachingExecutor
+     */
+    void setExecutorWrapper(CachingExecutor cachingExecutor);
 }

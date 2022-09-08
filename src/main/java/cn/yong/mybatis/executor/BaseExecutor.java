@@ -33,7 +33,9 @@ public abstract class BaseExecutor implements Executor {
     protected Transaction transaction;
 
     protected Executor wrapper;
-    // 本地缓存
+    /**
+     * 本地缓存
+     */
     protected PerpetualCache localCache;
 
     private boolean closed;
@@ -162,13 +164,15 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
-    private void clearLocalCache() {
+    @Override
+    public void clearLocalCache() {
         if (!closed) {
             localCache.clear();
         }
     }
 
-    private CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
+    @Override
+    public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
@@ -210,7 +214,16 @@ public abstract class BaseExecutor implements Executor {
             }
         } catch (SQLException e) {
             logger.warn("Unexpected exception on closing transaction. Cause: " + e);
+        } finally {
+            transaction = null;
+            localCache = null;
+            closed = true;
         }
+    }
+
+    @Override
+    public void setExecutorWrapper(CachingExecutor cachingExecutor) {
+        this.wrapper = wrapper;
     }
 
     protected void closeStatement(Statement statement) {

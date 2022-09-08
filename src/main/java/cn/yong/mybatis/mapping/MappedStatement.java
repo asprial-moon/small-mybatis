@@ -1,5 +1,6 @@
 package cn.yong.mybatis.mapping;
 
+import cn.yong.mybatis.cache.Cache;
 import cn.yong.mybatis.executor.keygen.Jdbc3KeyGenerator;
 import cn.yong.mybatis.executor.keygen.KeyGenerator;
 import cn.yong.mybatis.executor.keygen.NoKeyGenerator;
@@ -19,25 +20,21 @@ import java.util.Map;
 public class MappedStatement {
     private String resource;
     private Configuration configuration;
-
     private String id;
-
     private SqlCommandType sqlCommandType;
-
     private SqlSource sqlSource;
-
     Class<?> resultType;
-
     private LanguageDriver lang;
-
     private List<ResultMap> resultMaps;
     private boolean flushCacheRequired;
-    // step-14 新增
+    /**
+     * step-14 新增
+     */
     private KeyGenerator keyGenerator;
-
     private String[] keyProperties;
-
     private String[] keyColumns;
+    private Cache cache;
+    private boolean useCache;
 
 
     MappedStatement() {
@@ -91,6 +88,21 @@ public class MappedStatement {
 
         public Builder keyProperty(String keyProperty) {
             mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
+            return this;
+        }
+
+        public Builder cache(Cache cache) {
+            mappedStatement.cache = cache;
+            return this;
+        }
+
+        public Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.flushCacheRequired = flushCacheRequired;
+            return this;
+        }
+
+        public Builder useCache(boolean useCache) {
+            mappedStatement.useCache = useCache;
             return this;
         }
     }
@@ -149,5 +161,13 @@ public class MappedStatement {
 
     public boolean isFlushCacheRequired() {
         return flushCacheRequired;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
+    }
+
+    public Cache getCache() {
+        return cache;
     }
 }

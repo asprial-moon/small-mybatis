@@ -82,6 +82,16 @@ public interface SqlSession {
     void commit();
 
     /**
+     * 关闭Session
+     */
+    void close();
+
+    /**
+     * 清理Session缓存
+     */
+    void clearCache();
+
+    /**
      * Retrieves current configuration 得到配置
      * @return
      */

@@ -3,10 +3,7 @@ package cn.yong.mybatis.builder.xml;
 import cn.yong.mybatis.builder.BaseBuilder;
 import cn.yong.mybatis.datasource.DataSourceFactory;
 import cn.yong.mybatis.io.Resources;
-import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.Environment;
-import cn.yong.mybatis.mapping.MappedStatement;
-import cn.yong.mybatis.mapping.SqlCommandType;
 import cn.yong.mybatis.plugin.Interceptor;
 import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.LocalCacheScope;
@@ -21,8 +18,6 @@ import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * XML配置构建器，建造者模式，继承BaseBuilder
@@ -74,7 +69,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * Mybatis 允许你在某一点切入映射语句执行的调度
      * <plugins>
-     *     <plugin interceptor="cn.bugstack.mybatis.test.plugin.TestPlugin">
+     *     <plugin interceptor="cn.yong.mybatis.test.plugin.TestPlugin">
      *         <property name="test00" value="100"/>
      *         <property name="test01" value="100"/>
      *     </plugin>
@@ -100,7 +95,6 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-
     private void settingsElement(Element context) {
         if (context == null) {
             return;
@@ -111,8 +105,8 @@ public class XMLConfigBuilder extends BaseBuilder {
             properties.setProperty(element.attributeValue("name"), element.attributeValue("value"));
         }
         configuration.setLocalCacheScope(LocalCacheScope.valueOf(properties.getProperty("localCacheScope")));
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(properties.getProperty("localCacheScope")));
     }
-
 
     private void environmentsElement(Element context) throws Exception {
         String environment = context.attributeValue("default");
@@ -144,7 +138,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
-    /*
+    /**
      * <mappers>
      *	 <mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
      *	 <mapper resource="org/mybatis/builder/BlogMapper.xml"/>

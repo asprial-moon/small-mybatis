@@ -1,5 +1,8 @@
 package cn.yong.mybatis.builder;
 
+import cn.yong.mybatis.cache.Cache;
+import cn.yong.mybatis.cache.decorators.FifoCache;
+import cn.yong.mybatis.cache.impl.PerpetualCache;
 import cn.yong.mybatis.executor.keygen.KeyGenerator;
 import cn.yong.mybatis.mapping.*;
 import cn.yong.mybatis.reflection.MetaClass;
@@ -9,6 +12,7 @@ import cn.yong.mybatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Line
@@ -18,6 +22,7 @@ import java.util.List;
 public class MapperBuilderAssistant extends BaseBuilder {
     private String currentNamespace;
     private String resource;
+    private Cache currentCache;
 
     public MapperBuilderAssistant(Configuration configuration, String resource) {
         super(configuration);
@@ -94,12 +99,18 @@ public class MapperBuilderAssistant extends BaseBuilder {
             Class<?> parameterType,
             String resultMap,
             Class<?> resultType,
+            boolean flushCache,
+            boolean useCache,
             KeyGenerator keyGenerator,
             String keyProperty,
             LanguageDriver lang
     ) {
         // 给id加上namespace前缀：cn.yong.mybatis.test.dao.IUserDao.queryUserInfoById
         id = applyCurrentNamespace(id, false);
+
+        // 是否是select语句
+        boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+
         MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration, id, sqlCommandType, sqlSource, resultType);
         statementBuilder.resource(resource);
         statementBuilder.keyGenerator(keyGenerator);
@@ -107,6 +118,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
         // 结果映射，给MappedStatement#resultMaps
         setStatementResultMap(resultMap, resultType, statementBuilder);
+        setStatementCache(isSelect, flushCache, useCache, currentCache, statementBuilder);
 
         MappedStatement statement = statementBuilder.build();
         // 映射语句信息，建造完存放到配置项中
@@ -115,6 +127,17 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return statement;
     }
 
+    private void setStatementCache(boolean isSelect,
+                                   boolean flushCache,
+                                   boolean useCache,
+                                   Cache cache,
+                                   MappedStatement.Builder statementBuilder) {
+        flushCache = valueOrDefault(flushCache, !isSelect);
+        useCache = valueOrDefault(useCache, isSelect);
+        statementBuilder.flushCacheRequired(flushCache);
+        statementBuilder.useCache(useCache);
+        statementBuilder.cache(cache);
+    }
 
 
     public void setStatementResultMap(String resultMap, Class<?> resultType, MappedStatement.Builder statementBuilder) {
@@ -156,5 +179,47 @@ public class MapperBuilderAssistant extends BaseBuilder {
         ResultMap resultMap = inlineResultMapBuilder.build();
         configuration.addResultMap(resultMap);
         return resultMap;
+    }
+
+    /**
+     * 使用新缓存
+     * @param typeClass
+     * @param evictionClass
+     * @param flushInterval
+     * @param size
+     * @param readWrite
+     * @param blocking
+     * @param props
+     * @return
+     */
+    public Cache useNewCache(Class<? extends Cache> typeClass,
+                             Class<? extends Cache> evictionClass,
+                             Long flushInterval,
+                             Integer size,
+                             boolean readWrite,
+                             boolean blocking,
+                             Properties props) {
+        typeClass = valueOrDefault(typeClass, PerpetualCache.class);
+        evictionClass = valueOrDefault(evictionClass, FifoCache.class);
+
+        // 建造者模式构建Cache [currentNamespace=cn.yong.mybatis.test.dao.IActivityDao]
+        Cache cache = new CacheBuilder(currentNamespace)
+                .implementation(typeClass)
+                .addDecorator(evictionClass)
+                .clearInterval(flushInterval)
+                .size(size)
+                .readWrite(readWrite)
+                .blocking(blocking)
+                .properties(props)
+                .build();
+
+        // 添加缓存
+        configuration.addCache(cache);
+        currentCache = cache;
+        return cache;
+    }
+
+    private <T> T valueOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
     }
 }
