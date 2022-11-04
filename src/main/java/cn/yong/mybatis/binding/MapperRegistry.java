@@ -1,6 +1,7 @@
 package cn.yong.mybatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
+import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.SqlSession;
 
 import java.util.HashMap;
@@ -13,6 +14,12 @@ import java.util.Set;
  * @date 2022/11/3
  */
 public class MapperRegistry {
+    private Configuration configuration;
+
+    public MapperRegistry(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
     /**
      * 将已添加的映射器代理加入到 HashMap
      */
