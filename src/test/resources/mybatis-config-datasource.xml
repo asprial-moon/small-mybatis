@@ -4,6 +4,18 @@
 
 <configuration>
 
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="DRUID">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://rm-wz943nx257hyn554v2o.mysql.rds.aliyuncs.com/mybatis?useUnicode=true&amp;useSSL=false"/>
+                <property name="username" value="root"/>
+                <property name="password" value="Sunnyday1711"/>
+            </dataSource>
+        </environment>
+    </environments>
+
     <mappers>
         <mapper resource="mapper/User_Mapper.xml"/>
     </mappers>

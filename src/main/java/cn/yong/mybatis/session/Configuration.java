@@ -1,7 +1,11 @@
 package cn.yong.mybatis.session;
 
 import cn.yong.mybatis.binding.MapperRegistry;
+import cn.yong.mybatis.datasource.druid.DruidDataSourceFactory;
+import cn.yong.mybatis.mapping.Environment;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import cn.yong.mybatis.type.TypeAliasRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +17,10 @@ import java.util.Map;
  */
 public class Configuration {
     /**
+     * 环境
+     */
+    protected Environment environment;
+    /**
      * 映射注册机
      */
     protected MapperRegistry mapperRegistry = new MapperRegistry(this);
@@ -20,6 +28,15 @@ public class Configuration {
      * 映射的语句，存在 Map 里
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    /**
+     * 类型别名注册机
+     */
+    protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+    public Configuration() {
+        typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+    }
 
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
@@ -43,5 +60,17 @@ public class Configuration {
 
     public MappedStatement getMappedStatement(String id) {
         return mappedStatements.get(id);
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 }
