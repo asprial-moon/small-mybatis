@@ -72,7 +72,7 @@ public class PooledDataSource implements DataSource {
                    newConnection.setCreatedTimestamp(connection.getCreatedTimestamp());
                    newConnection.setLastUsedTimestamp(connection.getLastUsedTimestamp());
                    connection.invalidate();
-                   logger.info("Returned connection " + newConnection.getRealConnection() + " to pool.");
+                   logger.info("Returned connection " + newConnection.getRealHashCode() + " to pool.");
 
                    // 通知其他线程可以来抢DB链接
                    state.notifyAll();
@@ -85,7 +85,7 @@ public class PooledDataSource implements DataSource {
                     }
                     // 将connection关闭
                     connection.getRealConnection().close();
-                    logger.info("Closed Connection " + connection.getRealConnection() + ".");
+                    logger.info("Closed Connection " + connection.getRealHashCode() + ".");
                     connection.invalidate();
                 }
             } else {
@@ -128,9 +128,9 @@ public class PooledDataSource implements DataSource {
                                 oldestActiveConnection.getRealConnection().rollback();
                             }
                             // 删掉最老来链接，然后重新实例化一个新的链接
-                            conn = new PooledConnection(oldestActiveConnection.getProxyConnection(), this);
+                            conn = new PooledConnection(oldestActiveConnection.getRealConnection(), this);
                             oldestActiveConnection.invalidate();
-                            logger.info("Claimed overdue connection {}.", conn.getRealConnection());
+                            logger.info("Claimed overdue connection {}.", conn.getRealHashCode());
                         }
                         // 如果checkout超时时间不够长，则等待
                         else {
@@ -244,7 +244,7 @@ public class PooledDataSource implements DataSource {
                             realConn.rollback();
                         }
                         result = true;
-                        logger.info("Connection {} is GOOD!", conn.getRealConnection());
+                        logger.info("Connection {} is GOOD!", conn.getRealHashCode());
                     } catch (Exception e) {
                         logger.info("Execution of ping query '{}' failed: {}", poolPingQuery, e.getMessage());
                         try {
@@ -252,7 +252,7 @@ public class PooledDataSource implements DataSource {
                         } catch (SQLException ignore) {
                         }
                         result = false;
-                        logger.info("Connection {} is BAD", e.getMessage());
+                        logger.info("Connection {} is BAD: {}", conn.getRealHashCode(), e.getMessage());
                     }
                 }
             }
@@ -287,6 +287,12 @@ public class PooledDataSource implements DataSource {
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
         return popConnection(username, password).getProxyConnection();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        forceCloseAll();
+        super.finalize();
     }
 
     @Override
