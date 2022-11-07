@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
-    private Properties props;
+    protected Properties props;
 
     @Override
     public void setProperties(Properties props) {
@@ -22,7 +22,10 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
     @Override
     public DataSource getDataSource() {
         UnpooledDataSource unpooledDataSource = new UnpooledDataSource();
-
-        return null;
+        unpooledDataSource.setDriver(props.getProperty("driver"));
+        unpooledDataSource.setUrl(props.getProperty("url"));
+        unpooledDataSource.setUsername(props.getProperty("username"));
+        unpooledDataSource.setPassword(props.getProperty("password"));
+        return unpooledDataSource;
     }
 }
