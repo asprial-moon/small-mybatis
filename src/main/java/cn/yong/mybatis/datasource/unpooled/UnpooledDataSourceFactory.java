@@ -14,7 +14,7 @@ import java.util.Properties;
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
-    private DataSource dataSource;
+    protected DataSource dataSource;
 
     public UnpooledDataSourceFactory() {
         this.dataSource = new UnpooledDataSource();

@@ -6,18 +6,13 @@ import javax.sql.DataSource;
 
 /**
  * @author Line
- * @desc
+ * @desc 有池连接的数据数据源工厂
  * @date 2022/11/7
  */
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
-    @Override
-    public DataSource getDataSource() {
-        PooledDataSource pooledDataSource = new PooledDataSource();
-        pooledDataSource.setDriver(props.getProperty("driver"));
-        pooledDataSource.setUrl(props.getProperty("url"));
-        pooledDataSource.setUsername(props.getProperty("username"));
-        pooledDataSource.setPassword(props.getProperty("password"));
-        return pooledDataSource;
+    public PooledDataSourceFactory() {
+        this.dataSource = new PooledDataSource();
     }
+
 }

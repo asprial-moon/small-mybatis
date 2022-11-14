@@ -214,7 +214,6 @@ public class PooledDataSource implements DataSource {
                     if (!realConn.getAutoCommit()) {
                         realConn.rollback();
                     }
-                    realConn.close();
                 } catch (Exception ignore) {
 
                 }
@@ -348,6 +347,22 @@ public class PooledDataSource implements DataSource {
     public void setPassword(String password) {
         dataSource.setPassword(password);
         forceCloseAll();
+    }
+
+    public String getDriver() {
+        return this.dataSource.getDriver();
+    }
+
+    public String getUrl() {
+        return this.dataSource.getUrl();
+    }
+
+    public String getUsername() {
+        return dataSource.getUsername();
+    }
+
+    public String getPassword() {
+        return dataSource.getPassword();
     }
 
     public void setDefaultAutoCommit(boolean defaultAutoCommit) {

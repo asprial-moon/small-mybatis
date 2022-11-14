@@ -60,6 +60,16 @@ public class UnpooledDataSource implements DataSource {
         }
     }
 
+    public UnpooledDataSource() {
+    }
+
+    public UnpooledDataSource(String driver, String url, String username, String password) {
+        this.driver = driver;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+
     private static class DriverProxy implements Driver {
         private Driver driver;
 
@@ -221,7 +231,7 @@ public class UnpooledDataSource implements DataSource {
         return driver;
     }
 
-    public void setDriver(String driver) {
+    public synchronized void setDriver(String driver) {
         this.driver = driver;
     }
 

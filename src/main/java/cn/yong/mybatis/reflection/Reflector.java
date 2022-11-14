@@ -273,7 +273,7 @@ public class Reflector {
         Map<String, Method> uniqueMethods = new HashMap<>();
         Class<?> currentClass = clazz;
         while (currentClass != null) {
-            addUniqueMethods(uniqueMethods, currentClass.getMethods());
+            addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
             // we also need to look for interface methods -
             // because the class may be abstract
             Class<?>[] interfaces = currentClass.getInterfaces();
@@ -291,7 +291,21 @@ public class Reflector {
     private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
         for (Method currentMethod : methods) {
             if (!currentMethod.isBridge()) {
-                getSignature(currentMethod);
+                // 取得签名
+                String signature = getSignature(currentMethod);
+                // check to see if the method is already known
+                // if it is known, then on extended class must have
+                // overridden a method
+                if (!uniqueMethods.containsKey(signature)) {
+                    if (canAccessPrivateMethods()) {
+                        try {
+                            currentMethod.setAccessible(true);
+                        } catch (Exception e) {
+                            // Ignored. This is only final precaution, nothing we can do.
+                        }
+                    }
+                    uniqueMethods.put(signature, currentMethod);
+                }
             }
         }
     }
@@ -314,7 +328,6 @@ public class Reflector {
         }
         return sb.toString();
     }
-
 
     private static boolean canAccessPrivateMethods() {
         try {
