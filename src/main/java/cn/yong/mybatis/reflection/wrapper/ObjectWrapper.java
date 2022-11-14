@@ -33,7 +33,7 @@ public interface ObjectWrapper {
      * @param useCamelCaseMapping
      * @return
      */
-    String findProperty(String name, Object useCamelCaseMapping);
+    String findProperty(String name, boolean useCamelCaseMapping);
 
     /**
      * 取得getter的名字列表

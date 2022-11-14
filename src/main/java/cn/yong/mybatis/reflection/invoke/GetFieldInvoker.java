@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 /**
  * @author Line
- * @desc getter 调用
+ * @desc getter 调用者
  * @date 2022/11/8
  */
 public class GetFieldInvoker implements Invoker {

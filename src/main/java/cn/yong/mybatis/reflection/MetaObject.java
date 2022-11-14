@@ -2,9 +2,7 @@ package cn.yong.mybatis.reflection;
 
 import cn.yong.mybatis.reflection.factory.ObjectFactory;
 import cn.yong.mybatis.reflection.property.PropertyTokenizer;
-import cn.yong.mybatis.reflection.wrapper.MapWrapper;
-import cn.yong.mybatis.reflection.wrapper.ObjectWrapper;
-import cn.yong.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import cn.yong.mybatis.reflection.wrapper.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,15 +44,14 @@ public class MetaObject {
             this.objectWrapper = objectWrapperFactory.getWrapperFor(this, object);
         } else if (object instanceof Map) {
             // 如果是Map型，返回MapWrapper
-
+            this.objectWrapper = new MapWrapper(this, (Map) object);
         } else if (object instanceof Collection) {
             // 如果是Collection型, 返回CollectionWrapper
-//            this.objectWrapper = ne
+            this.objectWrapper = new CollectionWrapper(this, (Collection) object);
         } else {
             // 除此以外，返回BeanWrapper
-            this.objectWrapper = null;
+            this.objectWrapper = new BeanWrapper(this, object);
         }
-
     }
 
     public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory) {
