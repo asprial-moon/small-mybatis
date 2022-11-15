@@ -13,12 +13,21 @@ import cn.yong.mybatis.executor.statement.StatementHandler;
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.Environment;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.reflection.MetaObject;
+import cn.yong.mybatis.reflection.factory.DefaultObjectFactory;
+import cn.yong.mybatis.reflection.factory.ObjectFactory;
+import cn.yong.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import cn.yong.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import cn.yong.mybatis.scripting.LanguageDriverRegistry;
 import cn.yong.mybatis.transaction.Transaction;
 import cn.yong.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import cn.yong.mybatis.type.TypeAliasRegistry;
+import cn.yong.mybatis.type.TypeHandlerRegistry;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Allen
@@ -42,6 +51,24 @@ public class Configuration {
      * 类型别名注册机
      */
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+
+    /**
+     * 类型处理注册机
+     */
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+    /**
+     * 对象工厂
+     */
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    /**
+     * 对象包装器工厂
+     */
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    protected final Set<String> loadedResources = new HashSet<>();
+
+    protected String databaseId;
 
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
@@ -107,5 +134,30 @@ public class Configuration {
      */
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
         return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
+    }
+
+    /**
+     * 创建元对象
+     * @param object
+     * @return
+     */
+    public MetaObject newMetaObject(Object object) {
+        return MetaObject.forObject(object, objectFactory, objectWrapperFactory);
+    }
+
+    public TypeHandlerRegistry getTypeHandlerRegistry() {
+        return typeHandlerRegistry;
+    }
+
+    public boolean isResourceLoaded(String resource) {
+        return loadedResources.contains(resource);
+    }
+
+    public void setLoadedResources(String resources) {
+        loadedResources.add(resources);
+    }
+
+    public LanguageDriverRegistry getLanguageRegistry() {
+        return languageRegistry;
     }
 }
