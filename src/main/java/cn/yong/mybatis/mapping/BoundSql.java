@@ -1,5 +1,10 @@
 package cn.yong.mybatis.mapping;
 
+import cn.yong.mybatis.reflection.MetaObject;
+import cn.yong.mybatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,30 +15,41 @@ import java.util.Map;
 public class BoundSql {
 
     private String sql;
-    private Map<Integer, String> parameterMapping;
-    private String parameterType;
-    private String resultType;
+    private List<ParameterMapping> parameterMappings;
+    private Object parameterObject;
+    private Map<Integer, String> additionalParameters;
+    private MetaObject metaParameters;
 
-    public BoundSql(String sql, Map<Integer, String> parameterMapping, String parameterType, String resultType) {
+    public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {
         this.sql = sql;
-        this.parameterMapping = parameterMapping;
-        this.parameterType = parameterType;
-        this.resultType = resultType;
+        this.parameterMappings = parameterMappings;
+        this.parameterObject = parameterObject;
+        this.additionalParameters = new HashMap<>();
+        this.metaParameters = configuration.newMetaObject(additionalParameters);
     }
+
 
     public String getSql() {
         return sql;
     }
 
-    public Map<Integer, String> getParameterMapping() {
-        return parameterMapping;
+    public List<ParameterMapping> getParameterMappings() {
+        return parameterMappings;
     }
 
-    public String getParameterType() {
-        return parameterType;
+    public Object getParameterObject() {
+        return parameterObject;
     }
 
-    public String getResultType() {
-        return resultType;
+    public boolean hasAdditionalParameter(String name) {
+        return metaParameters.hasSetter(name);
+    }
+
+    public void setAdditionalParameter(String name, Object value) {
+        metaParameters.setValue(name, value);
+    }
+
+    public void getAdditionalParameter(String name) {
+        metaParameters.getValue(name);
     }
 }
