@@ -1,6 +1,5 @@
 package cn.yong.mybatis.test;
 
-import cn.yong.mybatis.binding.MapperRegistry;
 import cn.yong.mybatis.io.Resources;
 import cn.yong.mybatis.session.SqlSession;
 import cn.yong.mybatis.session.SqlSessionFactory;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 
 
 /**

@@ -30,10 +30,10 @@ public class RawSqlSource implements SqlSource {
 
     @Override
     public BoundSql getBoundSql(Object parameterObject) {
-        return null;
+        return sqlSource.getBoundSql(parameterObject);
     }
 
-    private static SqlNode getSql(Configuration configuration, SqlNode rootSqlNode) {
+    private static String getSql(Configuration configuration, SqlNode rootSqlNode) {
         DynamicContext context = new DynamicContext(configuration, null);
         rootSqlNode.apply(context);
         return context.getSql();

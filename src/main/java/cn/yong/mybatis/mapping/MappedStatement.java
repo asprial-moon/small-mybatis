@@ -2,8 +2,6 @@ package cn.yong.mybatis.mapping;
 
 import cn.yong.mybatis.session.Configuration;
 
-import java.util.Map;
-
 /**
  * @author Allen
  * @desc 映射语句类

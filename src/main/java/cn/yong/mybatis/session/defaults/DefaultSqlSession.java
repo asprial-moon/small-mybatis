@@ -1,15 +1,10 @@
 package cn.yong.mybatis.session.defaults;
 
 import cn.yong.mybatis.executor.Executor;
-import cn.yong.mybatis.mapping.BoundSql;
-import cn.yong.mybatis.mapping.Environment;
 import cn.yong.mybatis.mapping.MappedStatement;
 import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.SqlSession;
 
-import java.lang.reflect.Method;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +34,7 @@ public class DefaultSqlSession implements SqlSession {
     @Override
     public <T> T selectOne(String statement, Object parameter) {
         MappedStatement ms = configuration.getMappedStatement(statement);
-        List<T> list = executor.query(ms, parameter, Executor.NO_RESULT_HANDLER, ms.getBoundSql());
+        List<T> list = executor.query(ms, parameter, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
         return list.get(0);
     }
 

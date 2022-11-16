@@ -69,7 +69,8 @@ public class XMLMapperBuilder extends BaseBuilder {
      */
     private void buildStatementFromContext(List<Element> elements) {
         for (Element element : elements) {
-
+            XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, element, currentNamespace);
+            statementParser.parseStatementNode();
         }
     }
 }

@@ -19,6 +19,7 @@ import cn.yong.mybatis.reflection.factory.ObjectFactory;
 import cn.yong.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import cn.yong.mybatis.reflection.wrapper.ObjectWrapperFactory;
 import cn.yong.mybatis.scripting.LanguageDriverRegistry;
+import cn.yong.mybatis.scripting.xmltags.XMLLanguageDriver;
 import cn.yong.mybatis.transaction.Transaction;
 import cn.yong.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import cn.yong.mybatis.type.TypeAliasRegistry;
@@ -75,6 +76,8 @@ public class Configuration {
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+
+        languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
     public void addMappers(String packageName) {
@@ -111,6 +114,10 @@ public class Configuration {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    public String getDatabaseId() {
+        return databaseId;
     }
 
     /**
