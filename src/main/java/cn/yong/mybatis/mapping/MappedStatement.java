@@ -3,6 +3,8 @@ package cn.yong.mybatis.mapping;
 import cn.yong.mybatis.scripting.LanguageDriver;
 import cn.yong.mybatis.session.Configuration;
 
+import java.util.List;
+
 /**
  * @author Allen
  * @desc 映射语句类
@@ -17,6 +19,8 @@ public class MappedStatement {
     Class<?> resultType;
 
     private LanguageDriver lang;
+
+    private List<ResultMap> resultMaps;
 
     MappedStatement() {
         // constructor disabled
@@ -33,6 +37,15 @@ public class MappedStatement {
 
             mappedStatement.resultType = resultType;
             mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
+        }
+
+        public String id() {
+            return mappedStatement.id;
+        }
+
+        public Builder resultMaps(List<ResultMap> resultMaps) {
+            mappedStatement.resultMaps = resultMaps;
+            return this;
         }
 
         public MappedStatement build() {
@@ -64,5 +77,9 @@ public class MappedStatement {
 
     public LanguageDriver getLang() {
         return lang;
+    }
+
+    public List<ResultMap> getResultMaps() {
+        return resultMaps;
     }
 }
