@@ -76,7 +76,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         resultMap = applyCurrentNamespace(resultMap, true);
 
         List<ResultMap> resultMaps = new ArrayList<>();
-        if (resultMap == null) {
+        if (resultMap != null) {
             // TODO: 暂无Map结果映射配置，本章节不添加如此逻辑
         }
         /**

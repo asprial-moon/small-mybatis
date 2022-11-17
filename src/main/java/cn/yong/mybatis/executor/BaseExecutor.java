@@ -2,6 +2,7 @@ package cn.yong.mybatis.executor;
 
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.mapping.RowBounds;
 import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.ResultHandler;
 import cn.yong.mybatis.transaction.Transaction;
@@ -35,14 +36,14 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        return doQuery(ms, parameter, resultHandler, boundSql);
+        return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     @Override
     public Transaction getTransaction() {

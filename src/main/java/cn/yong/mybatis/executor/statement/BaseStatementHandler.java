@@ -5,6 +5,7 @@ import cn.yong.mybatis.executor.parameter.ParameterHandler;
 import cn.yong.mybatis.executor.resultset.ResultSetHandler;
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.mapping.RowBounds;
 import cn.yong.mybatis.session.Configuration;
 import cn.yong.mybatis.session.ResultHandler;
 
@@ -27,7 +28,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     protected final ParameterHandler parameterHandler;
     protected BoundSql boundSql;
 
-    public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler, BoundSql boundSql) {
+    public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
@@ -35,7 +36,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
         this.parameterObject = parameterObject;
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
-        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
+        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, resultHandler, boundSql);
     }
 
     @Override

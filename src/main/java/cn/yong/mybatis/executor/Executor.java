@@ -2,6 +2,7 @@ package cn.yong.mybatis.executor;
 
 import cn.yong.mybatis.mapping.BoundSql;
 import cn.yong.mybatis.mapping.MappedStatement;
+import cn.yong.mybatis.mapping.RowBounds;
 import cn.yong.mybatis.session.ResultHandler;
 import cn.yong.mybatis.transaction.Transaction;
 
@@ -17,7 +18,7 @@ public interface Executor {
 
     ResultHandler NO_RESULT_HANDLER = null;
 
-    <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     Transaction getTransaction();
 
